@@ -1,0 +1,5 @@
+D:\DarekJaros\programowanie_sieciowe\helloword\helloword\bin\Debug\helloword.exe
+D:\DarekJaros\programowanie_sieciowe\helloword\helloword\bin\Debug\helloword.pdb
+D:\DarekJaros\programowanie_sieciowe\helloword\helloword\obj\Debug\helloword.csprojResolveAssemblyReference.cache
+D:\DarekJaros\programowanie_sieciowe\helloword\helloword\obj\Debug\helloword.exe
+D:\DarekJaros\programowanie_sieciowe\helloword\helloword\obj\Debug\helloword.pdb

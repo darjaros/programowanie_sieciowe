@@ -1,0 +1,5 @@
+D:\DarekJaros\programowanie_sieciowe\suma\suma\bin\Debug\suma.exe
+D:\DarekJaros\programowanie_sieciowe\suma\suma\bin\Debug\suma.pdb
+D:\DarekJaros\programowanie_sieciowe\suma\suma\obj\Debug\suma.csprojResolveAssemblyReference.cache
+D:\DarekJaros\programowanie_sieciowe\suma\suma\obj\Debug\suma.exe
+D:\DarekJaros\programowanie_sieciowe\suma\suma\obj\Debug\suma.pdb
