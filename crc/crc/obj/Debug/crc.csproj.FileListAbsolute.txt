@@ -1,0 +1,11 @@
+D:\DarekJaros\programowanie_sieciowe\crc\crc\bin\Debug\crc.exe
+D:\DarekJaros\programowanie_sieciowe\crc\crc\bin\Debug\crc.pdb
+D:\DarekJaros\programowanie_sieciowe\crc\crc\obj\Debug\crc.csprojResolveAssemblyReference.cache
+D:\DarekJaros\programowanie_sieciowe\crc\crc\obj\Debug\crc.exe
+D:\DarekJaros\programowanie_sieciowe\crc\crc\obj\Debug\crc.pdb
+C:\Users\ESSENTIEL b\source\repos\crc\crc\bin\Debug\crc.exe
+C:\Users\ESSENTIEL b\source\repos\crc\crc\bin\Debug\crc.pdb
+C:\Users\ESSENTIEL b\source\repos\crc\crc\obj\Debug\crc.csprojResolveAssemblyReference.cache
+C:\Users\ESSENTIEL b\source\repos\crc\crc\obj\Debug\crc.csproj.CoreCompileInputs.cache
+C:\Users\ESSENTIEL b\source\repos\crc\crc\obj\Debug\crc.exe
+C:\Users\ESSENTIEL b\source\repos\crc\crc\obj\Debug\crc.pdb
