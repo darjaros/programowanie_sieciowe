@@ -1,0 +1,5 @@
+D:\DarekJaros\programowanie_sieciowe\client\client\bin\Debug\client.exe
+D:\DarekJaros\programowanie_sieciowe\client\client\bin\Debug\client.pdb
+D:\DarekJaros\programowanie_sieciowe\client\client\obj\Debug\client.csprojResolveAssemblyReference.cache
+D:\DarekJaros\programowanie_sieciowe\client\client\obj\Debug\client.exe
+D:\DarekJaros\programowanie_sieciowe\client\client\obj\Debug\client.pdb

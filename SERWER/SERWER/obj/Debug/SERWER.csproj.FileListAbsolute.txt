@@ -1,0 +1,5 @@
+D:\DarekJaros\programowanie_sieciowe\SERWER\SERWER\bin\Debug\SERWER.exe
+D:\DarekJaros\programowanie_sieciowe\SERWER\SERWER\bin\Debug\SERWER.pdb
+D:\DarekJaros\programowanie_sieciowe\SERWER\SERWER\obj\Debug\SERWER.csprojResolveAssemblyReference.cache
+D:\DarekJaros\programowanie_sieciowe\SERWER\SERWER\obj\Debug\SERWER.exe
+D:\DarekJaros\programowanie_sieciowe\SERWER\SERWER\obj\Debug\SERWER.pdb
