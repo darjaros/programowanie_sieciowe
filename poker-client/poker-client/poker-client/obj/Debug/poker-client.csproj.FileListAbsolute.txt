@@ -1,0 +1,15 @@
+E:\poker-client\poker-client\poker-client\bin\Debug\poker-client.exe.config
+E:\poker-client\poker-client\poker-client\bin\Debug\poker-client.exe
+E:\poker-client\poker-client\poker-client\bin\Debug\poker-client.pdb
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client.csprojResolveAssemblyReference.cache
+E:\poker-client\poker-client\poker-client\obj\Debug\MainWindow.g.cs
+E:\poker-client\poker-client\poker-client\obj\Debug\App.g.cs
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client_MarkupCompile.cache
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client_MarkupCompile.lref
+E:\poker-client\poker-client\poker-client\obj\Debug\MainWindow.baml
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client.g.resources
+E:\poker-client\poker-client\poker-client\obj\Debug\poker_client.Properties.Resources.resources
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client.csproj.GenerateResource.Cache
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client.csproj.CoreCompileInputs.cache
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client.exe
+E:\poker-client\poker-client\poker-client\obj\Debug\poker-client.pdb
