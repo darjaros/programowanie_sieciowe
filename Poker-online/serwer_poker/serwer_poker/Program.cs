@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,6 +41,11 @@ namespace serwer_poker
         /*Usuwanie z listy graczy nieaktywnych użytkowników*/
         static void WhoIsPlaying(List<Player> Players)
         {
+            Console.WriteLine("kolejnosć graczy");
+            foreach (var item in Players)
+            {
+                Console.WriteLine("gracz " + item.ID);
+            }
             bool AllClear = false;
             while (!AllClear)
             {
@@ -74,16 +82,22 @@ namespace serwer_poker
         }
 
         /*Zmiana kolejności graczy po rundzie*/
-        static void OrderPlayers(List<Player> ListOfPlayers)
+        static List<Player> OrderPlayers(List<Player> ListOfPlayers)
         {
-            Player TempPlayer = new Player();
-            TempPlayer = ListOfPlayers.ElementAt(0);
+            int NumberOfPlayers = ListOfPlayers.Count();
+            Player TempPlayer = ListOfPlayers.ElementAt(0);
+            Console.WriteLine("w tempplayer jest gracz " + TempPlayer.ID);
+            List<Player> TempList = new List<Player>();
             int Index = 1;
-            while(Index <= 3)
+            while(Index < NumberOfPlayers)
             {
-                ListOfPlayers.Insert(Index - 1, ListOfPlayers.ElementAt(Index));
+                Console.WriteLine("do tymczasowej listy dodaję gracza " + ListOfPlayers.ElementAt(1).ID);
+                TempList.Add(ListOfPlayers.ElementAt(Index));
+                Index++;
             }
-            ListOfPlayers.Insert(Index, TempPlayer);
+            TempList.Add(TempPlayer);
+
+            return TempList;
         }
 
         /*Pierwsze rozdanie kart*/
@@ -95,11 +109,13 @@ namespace serwer_poker
             {
                 Player.AddCard(TempDeck.ElementAt(IndexofCard));
                 IndexofCard++;
+                SendToOne(TempDeck.ElementAt(IndexofCard), Player);
             }
             foreach (Player Player in Players)
             {
                 Player.AddCard(TempDeck.ElementAt(IndexofCard));
                 IndexofCard++;
+                SendToOne(TempDeck.ElementAt(IndexofCard), Player);
             }
             TempDeck.Clear();
         }
@@ -155,8 +171,9 @@ namespace serwer_poker
         }
 
         /*Pierwsza licytacja obejmująca Blindy*/
-        static void FirstBetting(List<Player> Players, Table Table)
+        static bool FirstBetting(List<Player> Players, Table Table)
         {
+            bool EndOfRound;
             /*Ustalenie rozpoczynającego gracza i przydzielenie blindów*/
             int IndexOfPlayer;
             if (Players.Count() == 2)
@@ -178,12 +195,14 @@ namespace serwer_poker
                 IndexOfPlayer = 3;
             }
 
-            Betting(Players, Table, IndexOfPlayer);
+            EndOfRound = Betting(Players, Table, IndexOfPlayer);
+            return EndOfRound;
         }
 
         /*Każda następna licytacja*/
-        static void NextBetting(List<Player> Players, Table Table)
+        static bool NextBetting(List<Player> Players, Table Table)
         {
+            bool EndOfRound;
             /*Ustalenie rozpoczynającego gracza*/
             int IndexOfPlayer;
             if (Players.Count() <= 3)
@@ -195,14 +214,16 @@ namespace serwer_poker
                 IndexOfPlayer = 3;
             }
 
-            Betting(Players, Table, IndexOfPlayer);
+            EndOfRound = Betting(Players, Table, IndexOfPlayer);
+            return EndOfRound;
         }
 
         /*Metoda licytacji*/
-        static void Betting(List<Player> Players, Table Table, int IndexOfPlayer)
+        static bool Betting(List<Player> Players, Table Table, int IndexOfPlayer)
         {
             int Decision = 0;
             bool ContinueBetting = true;
+            bool EndOfRound = false;
             while (ContinueBetting)
             {
                 bool Control = true;
@@ -224,7 +245,7 @@ namespace serwer_poker
                      przesyłana jako int:
                      -1 - fold, 0 - call/check, wartość_int - raise, max_int - all in*/
                     Console.WriteLine("podejmij decyzję");
-                    string decyzja = Console.ReadLine();
+                    string decyzja = ReadFromOne(Players.ElementAt(IndexOfPlayer));
                     try
                     {
                         Decision = int.Parse(decyzja);
@@ -299,18 +320,30 @@ namespace serwer_poker
                 {
                     IndexOfPlayer++;
                 }
-
+                int NumberOfChecks = 0;
+                
                 /*Sprawdzenie czy niefoldujący gracze dokonali checka*/
                 foreach (Player Player in Players)
                 {
                     if (!Player.Fold)
                     {
                         Control &= Player.Check;
-                    }
+                        NumberOfChecks++;
+                    }  
                 }
-
+                /*Jeśli jest tylko jeden gracz niefoldujący schekowany, to następuje przejście do końca*/
+                if (NumberOfChecks == 1)
+                {
+                    EndOfRound = true;
+                    ContinueBetting = false;
+                    return EndOfRound;
+                }
+                else
                 /*Jeśli wszyscy schekowali, to następuje wyjście z licytacji*/
-                ContinueBetting = !Control;
+                {
+                    ContinueBetting = !Control;
+                    EndOfRound = false;
+                }
                 Console.WriteLine("zmienna continuebetting: " + ContinueBetting);
             }
 
@@ -322,6 +355,7 @@ namespace serwer_poker
                     Player.Check = false;
                 }
             }
+            return EndOfRound;
         }
 
         /*Usunięcie z ręki powtarzających się wartości kart na potrzeby ewaluacji*/
@@ -497,134 +531,180 @@ namespace serwer_poker
                     /*poker (strit+kolor*/
                     if (Color)
                     {
+
                         Console.WriteLine("sprawdzam czy jest poker");
-                        Console.WriteLine("co najmniej 5 kart");
                         int DifferenceOneColor = 0;
                         StraightColor1 = 0;
                         List<byte> DistinctColor = ColorHand;
                         DistinctColor.Sort();
-
-                        Console.WriteLine("Posortowane karty do pokera:");
-                        foreach (byte Card in DistinctColor)
+                        Console.WriteLine("distinct color");
+                        foreach (var item in DistinctColor)
                         {
-                            Console.WriteLine(Card);
+                            Console.WriteLine(item);
                         }
+                        Console.ReadKey();
 
-                        for (byte Index = 0; Index < 4; Index++)
+                        if (DistinctColor.ElementAt(DistinctColor.Count() - 1) == 14)
                         {
-                            if (DistinctColor.ElementAt(Index + 1) - DistinctColor.ElementAt(Index) == 1)
+                            Console.WriteLine("jest as");
+                            DifferenceOneColor = 0;
+                            for (int i = 0; i < 5; i++)
                             {
-                                DifferenceOneColor++;
-                            }
-                        }
-                        if (DifferenceOneColor >= 4)
-                        {
-                            Console.WriteLine("jest poker w pierwszych pięciu kartach");
-                            StraightColor = true;
-                            StraightColor1 = DistinctColor.ElementAt(4);
-                            StraightColor1 *= 1000000;
-                            /*tiebreker poker z dostępnych 5 kart*/
-                            Player.TieBreaker = ValueHand;
-                            for (int Index = 0; Index < 4; Index++)
-                            {
-                                if (Player.TieBreaker.Contains(DistinctColor.ElementAt(Index)))
-                                {
-                                    Player.TieBreaker.Remove(DistinctColor.ElementAt(Index));
-                                }
-                            }
-                            /*koniec tiebreakera*/
-                        }
-                        DifferenceOneColor = 0;
-
-                        if (DistinctColor.Contains(14))
-                        {
-                            bool StraightColorAce = true;
-                            for (byte Index = 2; Index < 6; Index++)
-                            {
-                                if (DistinctColor.Contains(Index))
-                                {
-                                    StraightColorAce &= true;
-                                }
-                                else
-                                {
-                                    StraightColorAce = false;
-                                }
-                                if (StraightColorAce && (DistinctColor.ElementAt(3) > StraightColor1 / 1000000))
-                                {
-                                    StraightColor = true;
-                                    StraightColor1 = DistinctColor.ElementAt(3);
-                                    StraightColor1 *= 1000000;
-                                    Console.WriteLine("jest poker z asem na początku");
-                                    /*tiebreker poker z dostępnych 5 kart*/
-                                    Player.TieBreaker = ValueHand;
-                                    for (int Number = 2; Number < 6; Number++)
-                                    {
-                                        Player.TieBreaker.Remove((byte)Number);
-                                    }
-                                    Player.TieBreaker.Remove(14);
-                                    /*koniec tiebreakera*/
-                                }
-                            }
-                        }
-
-                        if (DistinctColor.Count() >= 6)
-                        {
-                            Console.WriteLine("jest co najmniej 6 kart");
-                            for (byte Index = 1; Index < 5; Index++)
-                            {
-                                if (DistinctColor.ElementAt(Index + 1) - DistinctColor.ElementAt(Index) == 1)
+                                if (DistinctColor.ElementAt(i) == i + 2)
                                 {
                                     DifferenceOneColor++;
                                 }
                             }
 
-                            if (DifferenceOneColor >= 4)
+                            if (DifferenceOneColor == 4)
                             {
-                                Console.WriteLine("jest poker w kartach od 2 do 6");
+                                Console.WriteLine("jest poker z asem na początku");
+                                StraightColor1 = (uint)DistinctColor.ElementAt(3) * 1000000;
                                 StraightColor = true;
-                                StraightColor1 = DistinctColor.ElementAt(5);
-                                StraightColor1 *= 1000000;
-                                /*tiebreker poker z dostępnych 6 kart*/
-                                Player.TieBreaker = ValueHand;
-                                for (int Index = 1; Index < 5; Index++)
+                                Player.TieBreaker.Clear();
+                                foreach (byte Card in WholeHand)
                                 {
-                                    if (Player.TieBreaker.Contains(DistinctColor.ElementAt(Index)))
-                                    {
-                                        Player.TieBreaker.Remove(DistinctColor.ElementAt(Index));
-                                    }
+                                    ValueCard = (byte)(Card % 16);
+                                    Player.TieBreaker.Add(ValueCard);
+                                    Console.WriteLine(ValueCard);
                                 }
-                                /*koniec tiebreakera*/
+                                for (byte i = 0; i <= 3; i++)
+                                {
+                                    Player.TieBreaker.Remove(DistinctColor.ElementAt(i));
+                                }
+                                Player.TieBreaker.Remove(14);
+                                Console.WriteLine("Karty na ręce gracza");
+                                foreach (var item in ValueHand)
+                                {
+                                    Console.WriteLine(item);
+                                }
+
+                                Console.WriteLine("Karty do tiebrekera");
+                                foreach (var item in Player.TieBreaker)
+                                {
+                                    Console.WriteLine(item);
+                                }
+                                Console.ReadKey();
                             }
+
+                        }
+                        if (DistinctColor.Count() >= 5)
+                        {
                             DifferenceOneColor = 0;
-
-                            if (DistinctColor.Count() >= 7)
+                            Console.WriteLine("co najmniej 5kart");
+                            for (byte i = 0; i < 4; i++)
                             {
-                                Console.WriteLine("co najmniej 7 kart");
-                                for (byte Index = 2; Index < 6; Index++)
+                                if (DistinctColor.ElementAt(i + 1) - DistinctColor.ElementAt(i) == 1)
                                 {
-                                    if (DistinctColor.ElementAt(Index + 1) - DistinctColor.ElementAt(Index) == 1)
-                                    {
-                                        DifferenceOneColor++;
-                                    }
+                                    DifferenceOneColor++;
+                                }
+                            }
+                            if (DifferenceOneColor == 4)
+                            {
+                                Console.WriteLine("jest poker z 5");
+                                StraightColor1 = (uint)DistinctColor.ElementAt(4) * 1000000;
+                                StraightColor = true;
+                                for (byte i = 0; i <= 4; i++)
+                                {
+                                    Player.TieBreaker.Remove(DistinctColor.ElementAt(i));
+                                }
+                                Console.WriteLine("Karty na ręce gracza");
+                                foreach (var item in ValueHand)
+                                {
+                                    Console.WriteLine(item);
                                 }
 
-                                if (DifferenceOneColor >= 4)
+                                Console.WriteLine("Karty do tiebrekera");
+                                foreach (var item in Player.TieBreaker)
                                 {
-                                    Console.WriteLine("jest poker w kartach od 3 do 7");
-                                    StraightColor = true;
-                                    StraightColor1 = DistinctColor.ElementAt(6);
-                                    StraightColor1 *= 1000000;
-                                    /*tiebreker poker z dostępnych 7 kart*/
-                                    Player.TieBreaker = ValueHand;
-                                    for (int Index = 2; Index < 6; Index++)
-                                    {
-                                        if (Player.TieBreaker.Contains(DistinctColor.ElementAt(Index)))
-                                        {
-                                            Player.TieBreaker.Remove(DistinctColor.ElementAt(Index));
-                                        }
-                                    }
-                                    /*koniec tiebreakera*/
+                                    Console.WriteLine(item);
                                 }
+                                Console.ReadKey();
+
+                            }
+                        }
+                        if (DistinctColor.Count() >= 6)
+                        {
+                            DifferenceOneColor = 0;
+                            Console.WriteLine("jest co najmniej 6 kart");
+                            DifferenceOneColor = 0;
+                            for (byte i = 1; i < 5; i++)
+                            {
+                                if (DistinctColor.ElementAt(i + 1) - DistinctColor.ElementAt(i) == 1)
+                                {
+                                    DifferenceOneColor++;
+                                }
+                            }
+                            if (DifferenceOneColor == 4)
+                            {
+                                Console.WriteLine("jest poker z 6");
+                                StraightColor1 = (uint)DistinctColor.ElementAt(5) * 1000000; ;
+                                StraightColor = true;
+                                Player.TieBreaker.Clear();
+                                foreach (byte Card in WholeHand)
+                                {
+                                    ValueCard = (byte)(Card % 16);
+                                    Player.TieBreaker.Add(ValueCard);
+                                    Console.WriteLine(ValueCard);
+                                }
+                                for (byte i = 1; i <= 5; i++)
+                                {
+                                    Player.TieBreaker.Remove(DistinctColor.ElementAt(i));
+                                }
+                                Console.WriteLine("Karty na ręce gracza");
+                                foreach (var item in ValueHand)
+                                {
+                                    Console.WriteLine(item);
+                                }
+
+                                Console.WriteLine("Karty do tiebrekera");
+                                foreach (var item in Player.TieBreaker)
+                                {
+                                    Console.WriteLine(item);
+                                }
+                                Console.ReadKey();
+                            }
+                        }
+                        if (DistinctColor.Count() >= 7)
+                        {
+                            DifferenceOneColor = 0;
+                            Console.WriteLine("jest co najmniej 7 kart");
+                            DifferenceOneColor = 0;
+                            for (byte i = 2; i < 6; i++)
+                            {
+                                if (DistinctColor.ElementAt(i + 1) - DistinctColor.ElementAt(i) == 1)
+                                {
+                                    DifferenceOneColor++;
+                                }
+                            }
+                            if (DifferenceOneColor == 4)
+                            {
+                                Console.WriteLine("jest poker z 7");
+                                StraightColor1 = (uint)DistinctColor.ElementAt(6) * 1000000; ;
+                                StraightColor = true;
+                                Player.TieBreaker.Clear();
+                                foreach (byte Card in WholeHand)
+                                {
+                                    ValueCard = (byte)(Card % 16);
+                                    Player.TieBreaker.Add(ValueCard);
+                                    Console.WriteLine(ValueCard);
+                                }
+                                for (byte i = 2; i <= 6; i++)
+                                {
+                                    Player.TieBreaker.Remove(DistinctColor.ElementAt(i));
+                                }
+                                Console.WriteLine("Karty na ręce gracza");
+                                foreach (var item in ValueHand)
+                                {
+                                    Console.WriteLine(item);
+                                }
+
+                                Console.WriteLine("Karty do tiebrekera");
+                                foreach (var item in Player.TieBreaker)
+                                {
+                                    Console.WriteLine(item);
+                                }
+                                Console.ReadKey();
                                 DifferenceOneColor = 0;
                             }
                         }
@@ -1064,7 +1144,7 @@ namespace serwer_poker
             if (SameValue.Count() <= 1)
             {
                 Console.WriteLine("Wygrał gracz " + Who);
-                Players.ElementAt(0).Chips += Table.Pot;
+                SameValue.ElementAt(0).Chips += Table.Pot;
                 Console.ReadKey();
             }
             else
@@ -1122,6 +1202,7 @@ namespace serwer_poker
                         if (SameValue.Count() <= 1)
                         {
                             Console.WriteLine("Koniec tiebreakera. Wygrał gracz " + Who);
+                            SameValue.ElementAt(0).Chips += Table.Pot;
                             Console.ReadKey();
                         }
                         else
@@ -1178,7 +1259,7 @@ namespace serwer_poker
                         }
                         else
                         {
-                        Console.WriteLine("potrzevbny kolejny tiebreaker");
+                        Console.WriteLine("potrzebny kolejny tiebreaker");
                             Cards++;
                             TieBreaker(SameValue, Max, Cards, Table);
                         }
@@ -1188,7 +1269,7 @@ namespace serwer_poker
 
         }
 
-        static void PreperationForNextRound(List<Player> Players, Table Table)
+        static List<Player> PreperationForNextRound(List<Player> Players, Table Table)
         {
             Table.Bid = 0;
             Table.CommunityCards.Clear();
@@ -1203,25 +1284,138 @@ namespace serwer_poker
                 Player.Bet = 0;
                 Player.ValueOfHand = 0;
             }
+            Console.WriteLine("Kolejność graczy w poprzedniej rundzie");
+            foreach (var item in Players)
+            {
+                Console.WriteLine("Gracz " + item.ID);
+            }
+            Players = OrderPlayers(Players);
+            Console.WriteLine("Nowa kolejność graczy");
+            foreach (var item in Players)
+            {
+                Console.WriteLine("Gracz " + item.ID);
+            }
+            Console.ReadKey();
+            return Players;
+        }
+
+        private static TcpListener server;
+        private static TcpClient tcpClient;   
+        delegate void WriteCallBack(string tekst);
+
+        static List<Player> Communication()
+        {
+            IPAddress ip = null;
+            int port = 0;
+            // deklarecja adresu IP
+            while (ip == null)
+            {
+                Console.WriteLine("Podaj adres IP sewera");
+                try
+                {
+                    ip = IPAddress.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    Console.WriteLine("Niewłaściwy sposób podania typ powinien być 127.0.0.1");
+                }
+            }
+            //deklaracja portu
+            while (port == 0)
+            {
+                Console.WriteLine("Podaj numer portu serwera");
+                try
+                {
+                    port = Int32.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    Console.WriteLine("Niewłaściwy sposób podania liczba powina być całkowita");
+                }
+            }
+            server = new TcpListener(ip, port);
+            server.Start();
+            Console.WriteLine("Serwer oczekuje na połączenia ...");
+            List<Player> AllPlayers = new List<Player>();
+            int NumerClient = 0;//zmienna do inkrementacji
+            //oczekiwanie na klientów
+            while (NumerClient < 4)
+            {
+                int NumberOfClients = AllPlayers.Count();
+                tcpClient = server.AcceptTcpClient();
+
+                if (NumberOfClients == 0)
+                {
+                    Player Player1 = new Player();
+                    AllPlayers.Add(Player1);
+                }
+                else if (NumberOfClients == 1)
+                {
+                    Player Player2 = new Player();
+                    AllPlayers.Add(Player2);
+                }
+                else if (NumberOfClients == 2)
+                {
+                    Player Player3 = new Player();
+                    AllPlayers.Add(Player3);
+                }
+                else
+                {
+                    Player Player4 = new Player();
+                    AllPlayers.Add(Player4);
+                }
+
+                AllPlayers.ElementAt(NumerClient).PortEnd = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Port;
+                AllPlayers.ElementAt(NumerClient).IPEnd = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address;
+                AllPlayers.ElementAt(NumerClient).NS = tcpClient.GetStream();
+                AllPlayers.ElementAt(NumerClient).Reader = new BinaryReader(AllPlayers.ElementAt(NumerClient).NS);
+                AllPlayers.ElementAt(NumerClient).Writer = new BinaryWriter(AllPlayers.ElementAt(NumerClient).NS);
+                AllPlayers.ElementAt(NumerClient).IsPlaying = true;
+                AllPlayers.ElementAt(NumerClient).ID = NumerClient + 1;
+                AllPlayers.ElementAt(NumerClient).Chips = 1000;
+                AllPlayers.ElementAt(NumerClient).Fold = false;
+                AllPlayers.ElementAt(NumerClient).Check = false;
+                AllPlayers.ElementAt(NumerClient).Bet = 0;
+                Console.WriteLine("Połączono klienta numer: " + (NumerClient + 1) + "AdresIP: ", AllPlayers.ElementAt(NumerClient).IPEnd
+                    + "Port: " + AllPlayers.ElementAt(NumerClient).PortEnd);
+                NumerClient++;
+            }
+            return AllPlayers;
+        }  
+        
+        // wysłanie wiadomości do wszystkich
+        private static void SendToAll(byte message, List<Player> Players)
+        {
+            foreach (Player Player in Players)
+            {
+                Player.Writer.Write(message);
+            }
+        }
+
+        // wysyłanie wiadomości do jednego 
+        private static void SendToOne(byte message, Player Player)
+        {
+            Player.Writer.Write(message);
+        }
+
+        //odebranie wiadomości
+        private static string ReadFromOne(Player Player)
+        {
+            return Player.Reader.ReadString();
         }
 
         static void Main(string[] args)
         {
-            //List<byte> DeckTemplate = new List<byte>();
-            Player Player1 = new Player { ID = 1, Chips = 1000, IsPlaying = true, Fold = false, Check = false, Bet = 0 };
-            Player Player2 = new Player { ID = 2, Chips = 1000, IsPlaying = true, Fold = false, Check = false, Bet = 0 };
-            Player Player3 = new Player { ID = 3, Chips = 1000, IsPlaying = false, Fold = false, Check = false, Bet = 0 };
-            Player Player4 = new Player { ID = 4, Chips = 1000, IsPlaying = true, Fold = false, Check = false, Bet = 0 };
-            List<Player> AllPlayers = new List<Player>(){ Player1, Player2, Player3, Player4 };
+            bool EndOfRound = false;
+            List<Player> AllPlayers = Communication();
             foreach (Player Player in AllPlayers)
             {
                 Console.WriteLine("Gracz " + Player.ID + " gotowy");
             }            
             Table Table = new Table { Pot = 0, Bid = 0 };
-            //DeckTemplate = CreateDeck();
             while (AllPlayers.Count() >= 2)
             {
-                WhoIsPlaying(AllPlayers);
+                WhoIsPlaying(AllPlayers);//usuwanie z listy graczy niegrających
                 foreach (Player Player in AllPlayers)
                 {
                     Console.WriteLine("Gracz " + Player.ID + " gra");
@@ -1235,28 +1429,70 @@ namespace serwer_poker
                 }
                 List<byte> CardsOnTable = DealCards(DeckToPlay, 5);
                 Console.WriteLine("Licytacja 1");
-                FirstBetting(AllPlayers, Table);
-                Console.WriteLine("Pierwsze rozdanie kart na stół");
-                Table.Deal(CardsOnTable, 3);
-                Table.ShowCards();
-                Console.WriteLine("Licytacja 2");
-                NextBetting(AllPlayers, Table);
-                Console.WriteLine("Drugie rozdanie kart na stół");
-                Table.Deal(CardsOnTable, 1);
-                Table.ShowCards();
-                Console.WriteLine("Licytacja 3");
-                NextBetting(AllPlayers, Table);
-                Console.WriteLine("Trzecie i ostatnie rozdanie kart na stół");
-                Table.Deal(CardsOnTable, 1);
-                Console.WriteLine("Kart w talii: " + DeckToPlay.Count());
-                Table.ShowCards();
-                Console.WriteLine("Licytacja 4");
-                NextBetting(AllPlayers, Table);
-                Console.ReadKey();
-                Evaluate(AllPlayers, Table.CommunityCards);
-                Console.ReadKey();
-                WhoWon(AllPlayers, Table);
-                PreperationForNextRound(AllPlayers, Table);
+                EndOfRound = FirstBetting(AllPlayers, Table);
+                if (!EndOfRound)
+                {
+                    Console.WriteLine("Pierwsze rozdanie kart na stół");
+                    Table.Deal(CardsOnTable, 3);
+                    Table.ShowCards();
+                    int SentCards = 0;
+                    while (SentCards < 3)
+                    {
+                        SendToAll(Table.CommunityCards.ElementAt(SentCards), AllPlayers);
+                        SentCards++;
+                    }
+                    Console.WriteLine("Licytacja 2");
+                    EndOfRound = NextBetting(AllPlayers, Table);
+                    if (!EndOfRound)
+                    {
+                        Console.WriteLine("Drugie rozdanie kart na stół");
+                        Table.Deal(CardsOnTable, 1);
+                        Table.ShowCards();
+                        while (SentCards < 4)
+                        {
+                            SendToAll(Table.CommunityCards.ElementAt(SentCards), AllPlayers);
+                            SentCards++;
+                        }
+                        Console.WriteLine("Licytacja 3");
+                        EndOfRound = NextBetting(AllPlayers, Table);
+                        if (!EndOfRound)
+                        {
+                            Console.WriteLine("Trzecie i ostatnie rozdanie kart na stół");
+                            Table.Deal(CardsOnTable, 1);
+                            while (SentCards < 5)
+                            {
+                                SendToAll(Table.CommunityCards.ElementAt(SentCards), AllPlayers);
+                                SentCards++;
+                            }
+                            Console.WriteLine("Kart w talii: " + DeckToPlay.Count());
+                            Table.ShowCards();
+                            Console.WriteLine("Licytacja 4");
+                            EndOfRound = NextBetting(AllPlayers, Table);
+                            if (!EndOfRound)
+                            {
+                                Console.ReadKey();
+                                Evaluate(AllPlayers, Table.CommunityCards);
+                                Console.ReadKey();
+                                WhoWon(AllPlayers, Table);
+                            }
+                        }  
+                    } 
+                }
+                if(EndOfRound)
+                {
+                    Console.WriteLine("Wszyscy sfoldowali");
+                    foreach (Player Player  in AllPlayers)
+                    {
+                        if (!Player.Fold)
+                        {
+                            Console.WriteLine("Wygrał gracz " + Player.ID);
+                            Player.Chips += Table.Pot;
+                            Console.ReadKey();
+                        }
+                    }
+                }
+
+                AllPlayers = PreperationForNextRound(AllPlayers, Table);
                 Console.ReadKey();
             }
         }
