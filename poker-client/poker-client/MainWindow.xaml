@@ -1,0 +1,71 @@
+﻿<Window x:Class="poker_client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:poker_client"
+        mc:Ignorable="d"
+        Title="Poker-Online" Height="720" Width="1280">
+
+    <Grid x:Name="fold" Background="Green" Margin="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+
+        <Rectangle Grid.Column="8" Fill="#FFC8C8C8" HorizontalAlignment="Right" Height="4000" Grid.Row="0" Stroke="Black" VerticalAlignment="center" Width="5002" Grid.ColumnSpan="4" Grid.RowSpan="2"/>
+        <Label Grid.Row="0" Grid.Column="8" FontSize="20" Grid.ColumnSpan="2" HorizontalAlignment="Left"  VerticalAlignment="Center" >ADRES IP SERWERA</Label>
+        <Button x:Name="Fold" Grid.Row="5" Grid.Column="0" FontSize="24" Click="Fold_Click" IsEnabled="False">FOLD</Button>
+        <Button x:Name="Check" Grid.Row="5" Grid.Column="1" FontSize="24" Click="Check_Click" IsEnabled="False">CHECK</Button>
+        <Button x:Name="Call" Grid.Row="5" Grid.Column="2" FontSize="24" Click="Call_Click" IsEnabled="False">CALL</Button>
+        <Button x:Name="Raise" Grid.Row="5" Grid.Column="3" FontSize="24" Height="50" VerticalAlignment="Top" Click="Raise_Click" IsEnabled="False">RAISE</Button>
+        <TextBox x:Name="Rate"  Grid.Row="5" Grid.Column="4" FontSize="24" TextAlignment="Center" Text="1" TextChanged="Rate_TextChanged" />
+        <Rectangle Grid.Column="5" Fill="#FFF4F4F5" HorizontalAlignment="Right" Height="50" Grid.Row="5" Stroke="Black" VerticalAlignment="Top" Width="5002" Grid.ColumnSpan="3"/>
+        <Slider x:Name="slider" Grid.Column="5" HorizontalAlignment="Left" Grid.Row="5" VerticalAlignment="Bottom" Grid.ColumnSpan="4" Width="320" ValueChanged="slider_ValueChanged" Value="0" TickPlacement="BottomRight" TickFrequency="50" Maximum="100000" Height="27" Margin="0,0,0,23"  Minimum="1"   />
+        <TextBox x:Name="IP" Grid.ColumnSpan="3" FontSize="20" Grid.Column="9" HorizontalAlignment="Right" Height="42" Text="127.0.0.1" VerticalAlignment="Center" Width="240"  />
+        <Label Grid.Row="1" Grid.Column="8" FontSize="20" Grid.ColumnSpan="2" HorizontalAlignment="Left"  VerticalAlignment="Top" Content="PORT SERWERA" />
+        <TextBox x:Name="Port" Grid.ColumnSpan="3" FontSize="20" Grid.Row="1" Grid.Column="9" HorizontalAlignment="Right" Height="42" Text="8000" VerticalAlignment="top" Width="240" />
+        <Label x:Name="Lebel" Grid.Row="1" Grid.Column="8" FontSize="20" Grid.ColumnSpan="3" HorizontalAlignment="Left"  VerticalAlignment="Bottom" Content="BRAK POŁĄCZENIA Z SERWEREM"  />
+        <Button x:Name="Conect" Grid.Row="1" Grid.Column="11" Content="POŁĄCZ" FontSize="20"  VerticalAlignment="Bottom" Height="37" Click="Conect_Click" />
+        <Image x:Name="KartaS1" Grid.Column="5" Grid.Row="4" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaS2" Grid.Column="6" Grid.Row="4" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaN1" Grid.Column="5" Grid.Row="0" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaN2" Grid.Column="6" Grid.Row="0" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaW1" Grid.Column="0" Grid.Row="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaW2" Grid.Column="1" Grid.Row="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaE1" Grid.Column="10" Grid.Row="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaE2" Grid.Column="11" Grid.Row="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaC1" Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaC2" Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaC3" Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaC4" Grid.Column="6" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Image x:Name="KartaC5" Grid.Column="7" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top" Source="carts/tyl.jpg"/>
+        <Label x:Name="Ncoins" Grid.Row="1" Grid.Column="5" FontSize="32" Grid.ColumnSpan="2" HorizontalAlignment="center"  VerticalAlignment="Top" Content="10000"  />
+        <Label x:Name="Nplay" Grid.Row="1" Grid.Column="5" FontSize="32" Grid.ColumnSpan="2" HorizontalAlignment="center"  VerticalAlignment="Bottom" Content="0"  />
+        <Label x:Name="Scoins" Grid.Row="3" Grid.Column="5" FontSize="32" Grid.ColumnSpan="2" HorizontalAlignment="center"  VerticalAlignment="Bottom" Content="10000"  />
+        <Label x:Name="Splay" Grid.Row="3" Grid.Column="5" FontSize="32" Grid.ColumnSpan="2" HorizontalAlignment="center"  VerticalAlignment="Top" Content="0"  />
+        <Label x:Name="Wcoins" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" FontSize="32"  HorizontalAlignment="center"  VerticalAlignment="Top" Content="10000"  />
+        <Label x:Name="Wplay" Grid.Row="2" Grid.Column="2" FontSize="32" HorizontalAlignment="center"  VerticalAlignment="Center" Content="0"  />
+        <Label x:Name="Ecoins" Grid.Row="3" Grid.Column="10" Grid.ColumnSpan="2" FontSize="32"  HorizontalAlignment="center"  VerticalAlignment="Top" Content="10000"  />
+        <Label x:Name="Eplay" Grid.Row="2" Grid.Column="9" FontSize="32" HorizontalAlignment="center"  VerticalAlignment="Center" Content="0"  />
+    </Grid>
+</Window>
