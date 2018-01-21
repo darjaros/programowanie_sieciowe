@@ -31,8 +31,8 @@ namespace poker_client
         private BackgroundWorker worker2 = new BackgroundWorker();
         private TcpClient klient = null;
         delegate void SetTextCallBack(string tekst);
-        delegate void ChangeMinSliderCallBack(int min );
-        delegate void ChangeSliderCallBack(double value);
+        //delegate void ChangeMinSliderCallBack(int min );
+        //delegate void ChangeSliderCallBack(double value);
         delegate void IPReadCallBack();
         delegate void PortReadCallBack();
         delegate void AnswerCallBack();
@@ -46,6 +46,7 @@ namespace poker_client
         string ip = "";
         string port = "";
         public int yourpoosition = 0;
+        public int minraise =0;
         public MainWindow()
         {
             InitializeComponent();
@@ -55,19 +56,19 @@ namespace poker_client
         int Cache = 10000;
 
 
-        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            Rate.Text = (Math.Ceiling(slider.Value * (double)(Cache) / 100000.00)).ToString();
-        }
+        //private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        //{
+        //    Rate.Text = (Math.Ceiling(slider.Value * (double)(Cache) / 100000.00)).ToString();
+        //}
 
-        private void Rate_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            try
-            {
-                slider.Value = (Double)(Math.Ceiling(double.Parse(Rate.Text) / (double)(Cache) * 100000.00));
-            }
-            catch { }
-        }
+        //private void Rate_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        slider.Value = (Double)(Math.Ceiling(double.Parse(Rate.Text) / (double)(Cache) * 100000.00));
+        //    }
+        //    catch { }
+        //}
 
         private void Fold_Click(object sender, RoutedEventArgs e)
         {
@@ -78,7 +79,8 @@ namespace poker_client
                 Check.IsEnabled = false;
                 Call.IsEnabled = false;
                 Raise.IsEnabled = false;
-                ChangeMinSlider(1);
+                Answer();
+                //ChangeMinSlider(1);
             }
         }
 
@@ -91,6 +93,7 @@ namespace poker_client
                 Check.IsEnabled = false;
                 Call.IsEnabled = false;
                 Raise.IsEnabled = false;
+                Answer();
             }
         }
 
@@ -103,7 +106,8 @@ namespace poker_client
                 Check.IsEnabled = false;
                 Call.IsEnabled = false;
                 Raise.IsEnabled = false;
-                ChangeMinSlider(1);
+                Answer();
+                //ChangeMinSlider(1);
             }
         }
 
@@ -111,19 +115,31 @@ namespace poker_client
         {
             if (Answering == true)
             {
-                if (Int32.Parse(Rate.Text) == Cache)
+                if (Int32.Parse(Rate.Text) > Cache)
+                {
+                    MessageBox.Show("Liberum veto");
+                }
+                else if (Int32.Parse(Rate.Text) == Cache)
                 {
                     pisanie.Write("50000");
+                    Fold.IsEnabled = false;
+                    Check.IsEnabled = false;
+                    Call.IsEnabled = false;
+                    Raise.IsEnabled = false;
+                    Answer();
                 }
-                else
+                else 
                 {
+                    
                     pisanie.Write(Rate.Text);
+                    Fold.IsEnabled = false;
+                    Check.IsEnabled = false;
+                    Call.IsEnabled = false;
+                    Raise.IsEnabled = false;
+                    Answer();
                 }
-                Fold.IsEnabled = false;
-                Check.IsEnabled = false;
-                Call.IsEnabled = false;
-                Raise.IsEnabled = false;
-                ChangeMinSlider(1);
+               
+                //ChangeMinSlider(1);
 
             }
 
@@ -169,24 +185,24 @@ namespace poker_client
             }
             labeltext = label.Content.ToString() ;
         }
-        private void ChangeMinSlider(int min)
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                Dispatcher.Invoke(new ChangeMinSliderCallBack(ChangeMinSlider), min);
-                return;
-            }
-            slider.Minimum = (double)min;
-        }
-        private void ChangeSlider(double value)
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                Dispatcher.Invoke(new ChangeSliderCallBack(ChangeSlider), value);
-                return;
-            }
-            slider.Value = value;
-        }
+        //private void ChangeMinSlider(int min)
+        //{
+        //    if (!Dispatcher.CheckAccess())
+        //    {
+        //        Dispatcher.Invoke(new ChangeMinSliderCallBack(ChangeMinSlider), min);
+        //        return;
+        //    }
+        //    //slider.Minimum = (double)min;
+        //}
+        //private void ChangeSlider(double value)
+        //{
+        //    if (!Dispatcher.CheckAccess())
+        //    {
+        //        Dispatcher.Invoke(new ChangeSliderCallBack(ChangeSlider), value);
+        //        return;
+        //    }
+        //    //slider.Value = value;
+        //}
         private void Answer()
         {
             if (!Dispatcher.CheckAccess())
@@ -295,6 +311,22 @@ namespace poker_client
                     if (words[0] == "start")
                     {
                         yourpoosition = Int32.Parse(words[1]);
+                        string adress = String.Concat("carts/tyl.jpg");
+                        IMG(KartaC1, adress);
+                        IMG(KartaC2, adress);
+                        IMG(KartaC3, adress);
+                        IMG(KartaC4, adress);
+                        IMG(KartaC5, adress);
+                        IMG(KartaN1, adress);
+                        IMG(KartaN1, adress);
+                        IMG(KartaN2, adress);
+                        IMG(KartaE1, adress);
+                        IMG(KartaE2, adress);
+                        IMG(KartaS1, adress);
+                        IMG(KartaS2, adress);
+                        IMG(KartaW1, adress);
+                        IMG(KartaW2, adress);
+
                         MessageBox.Show(String.Concat("Grasz jako player numer", words[1]));
                     }
                     if (words[0] == "card" ) {
@@ -348,78 +380,72 @@ namespace poker_client
                     }
                     if (words[0] == "play") {
                         Answer();
-                        int Max = Int32.Parse(Nplay.Content.ToString());
-
-                        if (Max< Int32.Parse(Eplay.Content.ToString()))
+                        MessageBox.Show("Licytuj");
+                        ReadLabel(Nplay);
+                        int Max = Int32.Parse(labeltext);
+                        ReadLabel(Eplay);
+                        if (Max< Int32.Parse(labeltext))
                         {
-                            Max = Int32.Parse(Eplay.Content.ToString());
+                            Max = Int32.Parse(labeltext);
                         }
-                        if (Max < Int32.Parse(Splay.Content.ToString())) 
+                        ReadLabel(Splay);
+                        if (Max < Int32.Parse(labeltext))
                         {
-                            Max = Int32.Parse(Splay.Content.ToString());
+                            Max = Int32.Parse(labeltext);
                         }
-                        if (Max < Int32.Parse(Wplay.Content.ToString()))
+                        ReadLabel(Wplay);
+                        if (Max < Int32.Parse(labeltext))
                         {
-                            Max = Int32.Parse(Wplay.Content.ToString());
-                        }
-                        if(yourpoosition ==0)
-                        {
-                            if (Max == Int32.Parse(Nplay.Content.ToString()))
-                            {
-                                EnableButton(Fold);
-                                EnableButton(Check);
-                                EnableButton(Raise);
-
-                            }
-                            else
-                            {
-                                EnableButton(Fold);
-                                EnableButton(Call);
-                                EnableButton(Raise);
-                                ChangeMinSlider(Max - Int32.Parse(Nplay.Content.ToString()));
-                            }
+                            Max = Int32.Parse(labeltext);
                         }
                         if (yourpoosition == 1)
                         {
-                            if (Max == Int32.Parse(Eplay.Content.ToString()))
+                            ReadLabel(Nplay);
+                            if (Max == Int32.Parse(labeltext))
                             {
                                 EnableButton(Fold);
                                 EnableButton(Check);
                                 EnableButton(Raise);
-
+                                minraise = 0;
                             }
                             else
                             {
                                 EnableButton(Fold);
                                 EnableButton(Call);
                                 EnableButton(Raise);
-                                ChangeMinSlider(Max - Int32.Parse(Eplay.Content.ToString()));
+                                minraise = Max - Int32.Parse(labeltext);
+                                //ChangeMinSlider(Max - Int32.Parse(labeltext));
                             }
                         }
                         if (yourpoosition == 2)
                         {
-                            if (Max == Int32.Parse(Splay.Content.ToString()))
+                            ReadLabel(Eplay);
+                            if (Max == Int32.Parse(labeltext))
                             {
                                 EnableButton(Fold);
                                 EnableButton(Check);
-                                EnableButton(Raise);
 
+                                EnableButton(Raise);
+                                minraise = 0;
                             }
                             else
                             {
                                 EnableButton(Fold);
                                 EnableButton(Call);
                                 EnableButton(Raise);
-                                ChangeMinSlider(Max - Int32.Parse(Splay.Content.ToString()));
+                                minraise = Max - Int32.Parse(labeltext);
+                                //ChangeMinSlider(Max - Int32.Parse(labeltext));
                             }
                         }
                         if (yourpoosition == 3)
                         {
-                            if (Max == Int32.Parse(Wplay.Content.ToString()))
+                            ReadLabel(Splay);
+                            if (Max == (Int32.Parse(labeltext)))
                             {
                                 EnableButton(Fold);
                                 EnableButton(Check);
                                 EnableButton(Raise);
+                                minraise = 0;
 
                             }
                             else
@@ -427,29 +453,50 @@ namespace poker_client
                                 EnableButton(Fold);
                                 EnableButton(Call);
                                 EnableButton(Raise);
-                                ChangeMinSlider(Max - Int32.Parse(Wplay.Content.ToString()));
+                                minraise = Max - Int32.Parse(labeltext);
+                                // ChangeMinSlider(Max - Int32.Parse(labeltext));
+                            }
+                        }
+                        if (yourpoosition == 4)
+                        {
+                            ReadLabel(Wplay);
+                            if (Max == Int32.Parse(labeltext))
+                            {
+                                EnableButton(Fold);
+                                EnableButton(Check);
+                                EnableButton(Raise);
+                                minraise = 0;
+                            }
+                            else
+                            {
+                                EnableButton(Fold);
+                                EnableButton(Call);
+                                EnableButton(Raise);
+                                minraise = Max - Int32.Parse(labeltext);
+                                // ChangeMinSlider(Max - Int32.Parse(labeltext));
+
                             }
                         }
                     }
                     if (words[0] == "coin")
                     {
                         if (words[1] == yourpoosition.ToString()) { Cache = Int32.Parse(words[3]); }
-                        if(words[1] == "0")
+                        if(words[1] == "1")
                         {
                             ChangeLabel(Nplay, words[2]);
                             ChangeLabel(Ncoins, words[3]);
                         }
-                        if (words[1] == "1")
+                        if (words[1] == "2")
                         {
                             ChangeLabel(Eplay, words[2]);
                             ChangeLabel(Ecoins, words[3]);
                         }
-                        if (words[1] == "2")
+                        if (words[1] == "3")
                         {
                             ChangeLabel(Splay, words[2]);
                             ChangeLabel(Scoins, words[3]);
                         }
-                        if (words[1] == "3")
+                        if (words[1] == "4")
                         {
                             ChangeLabel(Wplay, words[2]);
                             ChangeLabel(Wcoins, words[3]);
@@ -491,5 +538,7 @@ namespace poker_client
                 ChangeLabel(Lebel, "Połączenie zostało przerwane\n");
             }
         }
+
+
     }
 }

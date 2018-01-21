@@ -38,10 +38,11 @@
         <Button x:Name="Check" Grid.Row="5" Grid.Column="1" FontSize="24" Click="Check_Click" IsEnabled="False">CHECK</Button>
         <Button x:Name="Call" Grid.Row="5" Grid.Column="2" FontSize="24" Click="Call_Click" IsEnabled="False">CALL</Button>
         <Button x:Name="Raise" Grid.Row="5" Grid.Column="3" FontSize="24" Height="50" VerticalAlignment="Top" Click="Raise_Click" IsEnabled="False">RAISE</Button>
-        <TextBox x:Name="Rate"  Grid.Row="5" Grid.Column="4" FontSize="24" TextAlignment="Center" Text="1" TextChanged="Rate_TextChanged" />
+        <TextBox x:Name="Rate"  Grid.Row="5" Grid.Column="4" FontSize="24" TextAlignment="Center" Text="1" />
+        <!--TextChanged="Rate_TextChanged" />
         <Rectangle Grid.Column="5" Fill="#FFF4F4F5" HorizontalAlignment="Right" Height="50" Grid.Row="5" Stroke="Black" VerticalAlignment="Top" Width="5002" Grid.ColumnSpan="3"/>
-        <Slider x:Name="slider" Grid.Column="5" HorizontalAlignment="Left" Grid.Row="5" VerticalAlignment="Bottom" Grid.ColumnSpan="4" Width="320" ValueChanged="slider_ValueChanged" Value="0" TickPlacement="BottomRight" TickFrequency="50" Maximum="100000" Height="27" Margin="0,0,0,23"  Minimum="1"   />
-        <TextBox x:Name="IP" Grid.ColumnSpan="3" FontSize="20" Grid.Column="9" HorizontalAlignment="Right" Height="42" Text="127.0.0.1" VerticalAlignment="Center" Width="240"  />
+        <Slider x:Name="slider" Grid.Column="5" HorizontalAlignment="Left" Grid.Row="5" VerticalAlignment="Bottom" Grid.ColumnSpan="4" Width="320" ValueChanged="slider_ValueChanged" Value="0" TickPlacement="BottomRight" TickFrequency="50" Maximum="100000" Height="27" Margin="0,0,0,23"  Minimum="1"   /-->
+        <TextBox x:Name="IP" Grid.ColumnSpan="3" FontSize="20" Grid.Column="9" HorizontalAlignment="Right" Height="42" Text="25.93.171.67" VerticalAlignment="Center" Width="240"  />
         <Label Grid.Row="1" Grid.Column="8" FontSize="20" Grid.ColumnSpan="2" HorizontalAlignment="Left"  VerticalAlignment="Top" Content="PORT SERWERA" />
         <TextBox x:Name="Port" Grid.ColumnSpan="3" FontSize="20" Grid.Row="1" Grid.Column="9" HorizontalAlignment="Right" Height="42" Text="8000" VerticalAlignment="top" Width="240" />
         <Label x:Name="Lebel" Grid.Row="1" Grid.Column="8" FontSize="20" Grid.ColumnSpan="3" HorizontalAlignment="Left"  VerticalAlignment="Bottom" Content="BRAK POŁĄCZENIA Z SERWEREM"  />
